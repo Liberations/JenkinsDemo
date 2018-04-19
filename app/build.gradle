@@ -1,0 +1,88 @@
+apply plugin: 'com.android.application'
+apply plugin: 'walle'
+
+android {
+    signingConfigs {
+        sign {
+            keyAlias 'konkamobile'
+            keyPassword 'konkamobile'
+            storePassword 'zhiguan'
+            storeFile file('../../mobilenew/buildsystem/zhiguan')
+        }
+    }
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
+    defaultConfig {
+        applicationId "com.renny.jenkinstest"
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode rootProject.ext.versionCode
+        versionName rootProject.ext.versionName
+        multiDexEnabled true
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        debug {
+            signingConfig signingConfigs.sign
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        release {
+            signingConfig signingConfigs.sign
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    flavorDimensions 'aym'
+    productFlavors {
+
+        ceshi {
+            buildConfigField "String", "CONFIG_ENDPOINT", "\"www.baidu.com\""
+        }
+
+        publish {
+            buildConfigField "String", "CONFIG_ENDPOINT", "\"www.mi.com\""
+
+        }
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+walle {
+    // 指定渠道包的输出路径
+    apkOutputFolder = new File("${project.buildDir}/outputs/channels")
+    // 定制渠道包的APK的文件名称
+    apkFileNameFormat = '${appName}-${packageName}-${channel}-${buildType}-v${versionName}-${versionCode}-${buildTime}.apk'
+    // 渠道配置文件
+    channelFile = new File("markets.txt")
+}
+
+repositories {
+    flatDir {
+        dirs 'libs'
+    }
+}
+
+allprojects {
+    repositories {
+        mavenCentral()
+    }
+}
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.android.support:appcompat-v7:27.0.2'
+    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+    testImplementation 'junit:junit:4.12'
+    implementation 'com.android.support:multidex:1.0.1'
+    androidTestImplementation 'com.android.support.test:runner:1.0.1'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+    implementation 'com.meituan.android.walle:library:1.1.6'
+}
